@@ -5,17 +5,52 @@
  */
 package aplikasicekcuacasederhana;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
+import javax.swing.table.DefaultTableModel;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+
+
 /**
  *
  * @author User
  */
 public class CekCuacaSederhanaFrame extends javax.swing.JFrame {
-
+    private Map<String, Integer> cityCountMap = new HashMap<>();
+    private final int MAX_VISIBLE_ITEM_COUNT = 5;  // Batas tampilan item sebelum dapat di-scroll
+    private javax.swing.JTable weatherTable;
+    private javax.swing.table.DefaultTableModel tableModel;
     /**
      * Creates new form CekCuacaSederhanaFrame
      */
     public CekCuacaSederhanaFrame() {
         initComponents();
+        
+        jComboBox1.setModel(new DefaultComboBoxModel<>());
+        jComboBox1.setMaximumRowCount(MAX_VISIBLE_ITEM_COUNT);
+        jComboBox1.addItemListener(e -> {
+            if (e.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
+                String selectedCity = (String) jComboBox1.getSelectedItem();
+                if (selectedCity != null) {
+                    jTextField1.setText(selectedCity);  // Masukkan ke jTextField1
+                    cekCuaca(selectedCity);  // Jalankan cekCuaca
+                }
+            }
+        });
+        tableModel = new DefaultTableModel(new String[]{"Kota", "Deskripsi Cuaca", "Suhu (°C)"}, 0);
+        jTable1.setModel(tableModel);
     }
 
     /**
@@ -27,22 +62,220 @@ public class CekCuacaSederhanaFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jButton1 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jButton2 = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(204, 255, 102));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Aplikasi Cek Cuaca Sederhana", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 24))); // NOI18N
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
+        jLabel1.setText("Input Lokasi Kota Yang Ingin Anda Cek :");
+
+        jComboBox1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox1ItemStateChanged(evt);
+            }
+        });
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+
+        jButton1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jButton1.setText("Cek Cuaca");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
+        jLabel2.setText("menampilkan gambar cuaca sesuai kondisi (cerah, hujan, dll) :");
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
+        jLabel3.setText("Riwayat Pencarian Kota :");
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        jButton2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jButton2.setText("Simpan ");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 831, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 331, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(66, 66, 66)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 696, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 27, Short.MAX_VALUE))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(18, 18, 18)
+                .addComponent(jButton2)
+                .addGap(35, 35, 35))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+     String kota = jTextField1.getText().trim();
+    if (!kota.isEmpty()) {
+        // Ambil nilai hitungan saat ini untuk kota, default 0 jika belum ada
+        int count = cityCountMap.getOrDefault(kota, 0) + 1;
+        cityCountMap.put(kota, count); // Update hitungan untuk kota tersebut
+
+        if (count == 3) {
+            // Pastikan kota belum ada di JComboBox sebelum menambahkannya
+            if (!isCityInComboBox(kota)) {
+                jComboBox1.addItem(kota);  // Tambahkan kota ke jComboBox1 sebagai favorit
+            }
+            cityCountMap.put(kota, 0);  // Reset hitungan setelah mencapai 3 kali
+        }
+
+        // Tampilkan informasi cuaca setiap kali input kota
+        cekCuaca(kota);  
+    }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+ 
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
+    String city = (String) jComboBox1.getSelectedItem();
+    jTextField1.setText(city);
+    }//GEN-LAST:event_jComboBox1ItemStateChanged
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    // Membuka JFileChooser untuk memilih lokasi dan nama file
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Pilih Lokasi untuk Menyimpan Data");
+    fileChooser.setSelectedFile(new File("cuaca_data.csv"));  // Menentukan nama file default
+    
+    int userSelection = fileChooser.showSaveDialog(this); // Menampilkan dialog penyimpanan
+    
+    if (userSelection == JFileChooser.APPROVE_OPTION) {  // Jika pengguna memilih lokasi untuk menyimpan file
+        File fileToSave = fileChooser.getSelectedFile(); // Mendapatkan file yang dipilih oleh pengguna
+        String fileName = fileToSave.getAbsolutePath(); // Mendapatkan path lengkap file yang dipilih
+        
+        // Memastikan file memiliki ekstensi .csv
+        if (!fileName.endsWith(".csv")) {
+            fileName += ".csv"; // Tambahkan .csv jika ekstensi belum ada
+        }
+        
+        try {
+            // Membuat objek BufferedWriter untuk menulis ke file
+            FileWriter fw = new FileWriter(fileName);
+            BufferedWriter bw = new BufferedWriter(fw);
+            
+            // Menulis header ke file CSV
+            bw.write("Kota,Deskripsi Cuaca,Suhu (°C)\n");
+            
+            // Menulis data dari tabel ke file CSV
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                String city = (String) tableModel.getValueAt(i, 0);
+                String weatherDescription = (String) tableModel.getValueAt(i, 1);
+                double temperature = (Double) tableModel.getValueAt(i, 2);
+                
+                // Menulis baris data ke file CSV
+                bw.write(city + "," + weatherDescription + "," + temperature + "\n");
+            }
+            
+            // Menutup BufferedWriter
+            bw.close();
+            
+            // Memberikan notifikasi kepada pengguna bahwa data berhasil disimpan
+            javax.swing.JOptionPane.showMessageDialog(this, "Data berhasil disimpan ke " + fileName, "Berhasil", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            // Menangani kesalahan saat menyimpan file
+            javax.swing.JOptionPane.showMessageDialog(this, "Gagal menyimpan data ke file.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+    }//GEN-LAST:event_jButton2ActionPerformed
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -79,5 +312,69 @@ public class CekCuacaSederhanaFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
+ 
+    private void cekCuaca(String kota) {
+        String apiKey = "68a26e25a86cb88389bbc2801261ec15";  
+        String urlString = "http://api.openweathermap.org/data/2.5/weather?q=" + kota + "&appid=" + apiKey + "&units=metric&lang=id";
+
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            Scanner scanner = new Scanner(url.openStream());
+            String response = "";
+            while (scanner.hasNext()) {
+                response += scanner.nextLine();
+            }
+            scanner.close();
+
+            JSONParser parser = new JSONParser();
+            JSONObject jsonResponse = (JSONObject) parser.parse(response);
+
+            JSONArray weatherArray = (JSONArray) jsonResponse.get("weather");
+            JSONObject weatherObj = (JSONObject) weatherArray.get(0);
+            String weatherDescription = (String) weatherObj.get("description");
+            String weatherIcon = (String) weatherObj.get("icon");
+
+            JSONObject mainObj = (JSONObject) jsonResponse.get("main");
+            double temperature = (Double) mainObj.get("temp");
+
+            jLabel2.setText("Cuaca di " + kota + ": " + weatherDescription + ", Suhu: " + temperature + "°C");
+
+            String iconUrl = "http://openweathermap.org/img/wn/" + weatherIcon + "@2x.png";
+            java.net.URL imgUrl = new java.net.URL(iconUrl);
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(imgUrl);
+            jLabel2.setIcon(icon);
+
+            // Tambahkan data cuaca ke JTable
+            tableModel.addRow(new Object[]{kota, weatherDescription, temperature});
+
+        } catch (Exception ex) {
+            jLabel2.setText("Kota tidak ditemukan!");
+            ex.printStackTrace();
+        }
+}
+
+// Metode untuk memeriksa apakah kota sudah ada dalam JComboBox
+private boolean isCityInComboBox(String city) {
+    for (int i = 0; i < jComboBox1.getItemCount(); i++) {
+        if (jComboBox1.getItemAt(i).equalsIgnoreCase(city)) {
+            return true;
+        }
+    }
+    return false;
+}
+    
 }
